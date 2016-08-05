@@ -24,14 +24,12 @@ void setup()
     Serial.print("Initialized Serial Port at ");
     Serial.print(BAUD_RATE);
     Serial.println(" baud rate.");
-
-    Seg7x4_setValue(8888);
 }
 
 
 void loop()
 {
-    Seg7x4_step();
+    Seg7x4_step(8888);
     US100_step();
 }
 

@@ -39,8 +39,6 @@ static const byte _segPins[SEG_NUM] = {
 };
 
 
-static word _7X4Val;    ///< current value to display
-
 /** The digit to display table. */
 static const byte data[10][SEG_NUM] = {
 //   a, b, c, d, e, f, g, h
@@ -87,17 +85,10 @@ void Seg7x4_init(void)
 }
 
 
-/** Sets a 4-digit value to show. */
-void Seg7x4_setValue(uint16_t val)
-{
-    assert (val <= 9999);
-
-    _7X4Val = val;
-}
-
-
-/** Step function of the 7-segment, 4-digit LED display. */
-void Seg7x4_step(void)
+/** Step function of the 7-segment, 4-digit LED display.
+ * @param number a 4-digit number to show
+ */
+void Seg7x4_step(word number)
 {
     enum {
         INTERVAL = 5    // milli-seconds
@@ -107,8 +98,13 @@ void Seg7x4_step(void)
     unsigned long currMillis;
     static unsigned long endMillis = 0;
 
-    if ((num_bak != _7X4Val) || (pos == 0)) {
-        remainder = num_bak = _7X4Val;
+    if (number > 9999) {
+        Seg7x4_clear();
+        return;
+    }
+
+    if ((num_bak != number) || (pos == 0)) {
+        remainder = num_bak = number;
         divisor = 1000;
         pos = 4;
     }
