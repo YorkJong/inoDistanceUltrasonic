@@ -119,17 +119,17 @@ bool US100_stepSerialTemperature(int *deg)
 
 
 //-----------------------------------------------------------------------------
-// US-100 in Plus Width mode (removing the jumper cap on the back)
+// US-100 in Pulse Width mode (removing the jumper cap on the back)
 //-----------------------------------------------------------------------------
 
 static uint8_t _trigPin;
 static uint8_t _echoPin;
 
-/** Initializes the US-100 with Plus Width mode.
+/** Initializes the US-100 with Pulse Width mode.
  * @param trigPin assign the Trig pin.
  * @param echoPin assign the Echo pin.
  */
-void US100_initPlus(uint8_t trigPin, uint8_t echoPin)
+void US100_initPulse(uint8_t trigPin, uint8_t echoPin)
 {
     _trigPin = trigPin;
     _echoPin = echoPin;
@@ -139,12 +139,12 @@ void US100_initPlus(uint8_t trigPin, uint8_t echoPin)
 }
 
 
-/** Measure a distance with Plus Width mode.
+/** Measure a distance with Pulse Width mode.
  * @param[out] len_mm the measured distance.
  * @retval true true in the case of success to get the distance;
  * @retval fasle otherwise.
  */
-bool US100_measurePlusDistance(uint16_t *len_mm)
+bool US100_measurePulseDistance(uint16_t *len_mm)
 {
     unsigned long echo_us;
 
