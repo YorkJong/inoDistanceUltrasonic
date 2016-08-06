@@ -29,18 +29,18 @@ typedef enum {
 #define SEG_NUM 8
 
 /** The position table. */
-static const byte _posPins[POS_NUM] = {
+static const uint8_t _posPins[POS_NUM] = {
     PIN_0, PIN_1, PIN_2, PIN_3
 };
 
 /** The 8-segment table. */
-static const byte _segPins[SEG_NUM] = {
+static const uint8_t _segPins[SEG_NUM] = {
     PIN_a, PIN_b, PIN_c, PIN_d, PIN_e, PIN_f, PIN_g, PIN_h
 };
 
 
 /** The digit to display table. */
-static const byte data[10][SEG_NUM] = {
+static const uint8_t data[10][SEG_NUM] = {
 //   a, b, c, d, e, f, g, h
     {1, 1, 1, 1, 1, 1, 0, 0},   // 0
     {0, 1, 1, 0, 0, 0, 0, 0},   // 1
@@ -88,13 +88,13 @@ void Seg7x4_init(void)
 /** Step function of the 7-segment, 4-digit LED display.
  * @param number a 4-digit number to show
  */
-void Seg7x4_step(word number)
+void Seg7x4_step(uint16_t number)
 {
     enum {
         INTERVAL = 5    // milli-seconds
     };
-    static word num_bak = 9999;
-    static word remainder, divisor, pos;
+    static uint16_t num_bak = 9999;
+    static uint16_t remainder, divisor, pos;
     unsigned long currMillis;
     static unsigned long endMillis = 0;
 
