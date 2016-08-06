@@ -37,38 +37,31 @@ bool US100_stepSerialDistance(uint16_t *len_mm)
     enum {
         TIMEOUT = 500   // milliseconds
     };
-
-    typedef enum {
-        S_Flush,
-        S_Trig,
-        S_Receive,
-        S_Read
-    } Stage;
-    static uint8_t stage = S_Flush;
+    static uint8_t stage = 0;
     static unsigned long endMillis;
 
     switch (stage) {
-    case S_Flush:   // clear receive buffer of serial port
+    case 0:   // clear receive buffer of serial port
         Serial.flush();
         ++stage;
         break;
-    case S_Trig:    // Trig US-100 begin to measure the distance
+    case 1:    // Trig US-100 begin to measure the distance
         Serial.write(0X55);
         endMillis = millis() + TIMEOUT;
         ++stage;
         break;
-    case S_Receive: // Wait to receive 2 bytes
+    case 2: // Wait to receive 2 bytes
         if (Serial.available() >= 2)
            ++stage;
         if (millis() >= endMillis)
-            stage = S_Flush;
+            stage = 0;
         break;
-    case S_Read:    // Read and calculate the result
+    case 3:    // Read and calculate the result
         *len_mm = Serial.read();    // read high byte of distance
         *len_mm *= 256;
         *len_mm += Serial.read();   // Add low byte of distance
 
-        stage = S_Flush;
+        stage = 0;
         return true;
     }
 
@@ -105,44 +98,29 @@ bool US100_stepSerialTemperature(int *deg)
     enum {
         TIMEOUT = 500   // milliseconds
     };
-
-    typedef enum {
-        S_Flush,
-        S_Trig,
-        S_Receive,
-        S_Read
-    } Stage;
-    static uint8_t stage = S_Flush;
+    static uint8_t stage = 0;
     static unsigned long endMillis;
 
     switch (stage) {
-    case S_Flush:   // clear receive buffer of serial port
+    case 0:   // clear receive buffer of serial port
         Serial.flush();
         ++stage;
         break;
-    case S_Trig:    // Trig US-100 begin to measure the temperature
+    case 1:    // Trig US-100 begin to measure the temperature
         Serial.write(0X50);
         endMillis = millis() + TIMEOUT;
         ++stage;
         break;
-    case S_Receive: // Wait to receive 1 byte
+    case 2: // Wait to receive 1 byte
         if (Serial.available() >= 1)
            ++stage;
         if (millis() >= endMillis)
-            stage = S_Flush;
+            stage = 0;
         break;
-    case S_Read:    // Read and calculate the result
+    case 3:    // Read and calculate the result
         *deg = Serial.read() - 45;
 
-        stage = S_Flush;
-        return true;
-    }
-
-    return false;
-
-    if (Serial.available() >= 1) {  // when receive 1 bytes
-        int deg45 = Serial.read(); // Get the received byte (temperature)
-
+        stage = 0;
         return true;
     }
 
