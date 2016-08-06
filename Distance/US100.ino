@@ -14,7 +14,9 @@
 // US-100 in Serial Data mode (module has jumper cap on the back)
 //-----------------------------------------------------------------------------
 
-/** Initializes US-100 module with Serial Data mode. */
+/** Initializes US-100 module with Serial Data mode.
+ * @note disconnect RX/Echo pin before upload the program.
+ */
 void US100_initSerial(void)
 {
     enum {
@@ -35,6 +37,7 @@ void US100_initSerial(void)
  * @param[out] len_mm the measured distance.
  * @retval true true in the case of success to get the distance;
  * @retval fasle otherwise.
+ * @note disconnect RX/Echo pin before upload the program.
  */
 bool US100_stepSerialDistance(uint16_t *len_mm)
 {
@@ -63,6 +66,7 @@ bool US100_stepSerialDistance(uint16_t *len_mm)
             stage = 0;
         break;
     case 3:     // Read and calculate the result
+        // Millimeters = FirstByteRead * 256 + SecondByteRead
         *len_mm = Serial.read();    // Read high byte of distance
         *len_mm *= 256;
         *len_mm += Serial.read();   // Read and add low byte of distance
@@ -80,6 +84,7 @@ bool US100_stepSerialDistance(uint16_t *len_mm)
  * @param[out] deg the degree of the measured temperature.
  * @retval true true in the case of success to get the temperature;
  * @retval fasle otherwise.
+ * @note disconnect RX/Echo pin before upload the program.
  */
 bool US100_stepSerialTemperature(int *deg)
 {
@@ -108,6 +113,7 @@ bool US100_stepSerialTemperature(int *deg)
             stage = 0;
         break;
     case 3:     // Read and calculate the result
+        // Celsius = ByteRead - 45
         *deg = Serial.read() - 45;
 
         stage = 0;
@@ -152,11 +158,15 @@ bool US100_measurePulseDistance(uint16_t *len_mm)
     digitalWrite(_trigPin, HIGH);       // Send pulses begin by Trig / Pin
     delayMicroseconds(50);              // Set the pulse width of 50us (> 10us)
     digitalWrite(_trigPin, LOW);        // The end of the pulse
-    echo_us = pulseIn(_echoPin, HIGH);  // A pulse width calculating US-100 returned
 
-    if ((echo_us < 60000) && (echo_us > 1)) {   // Pulse effective range (1, 60000).
+    // A pulse width calculating US-100 returned
+    echo_us = pulseIn(_echoPin, HIGH);
+
+    // Pulse effective range (1, 60000).
+    if ((echo_us < 60000) && (echo_us > 1)) {
+        // Millimeters = PulseWidth * 34 / 100 / 2
         // len_mm = (echo_us * 0.34mm/us) / 2 (mm)
-        *len_mm = (echo_us*34/100) / 2;         // Calculating the distance by a pulse width.
+        *len_mm = (echo_us*34/100) / 2;
 
         return true;
     }
