@@ -19,12 +19,10 @@ void loop()
 {
     uint16_t len_mm;
 
-    if (!US100_stepSerialDistance(&len_mm))
-        return;
-
-    if (US100_isValidDistance(len_mm))
-        Seg7x4_step(len_mm);
-    else
+    if (US100_stepSerialDistance(&len_mm) && !US100_isValidDistance(len_mm)) {
         Seg7x4_clear();
+        return;
+    }
+    Seg7x4_step(len_mm);
 }
 
