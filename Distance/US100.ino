@@ -1,6 +1,8 @@
 /**
  * @file US100.ino
- *  US-100 ultra-sonic distance sensor
+ *  US-100 ultrasonic distance sensor
+ * @see https://sites.google.com/site/myscratchbooks/home/projects/project-09-
+ * ultrasonic-sensor
  * @author Jiang Yu-Kuan <yukuan.jiang@gmail.com>
  * @date 2016/08/06 (initial version)
  * @date 2016/08/06 (last revision)
@@ -32,15 +34,41 @@ void US100_initSerial(void)
  */
 bool US100_stepSerialDistance(uint16_t *len_mm)
 {
-    Serial.flush();                 // clear receive buffer of serial port
-    Serial.write(0X55);             // begin to measure the distance
-    delay(500);                     // delay 500ms to wait result
+    enum {
+        TIMEOUT = 500   // milliseconds
+    };
 
-    if (Serial.available() >= 2) {      // when receive 2 bytes
-        uint8_t hi = Serial.read();     // High byte of distance
-        uint8_t lo = Serial.read();     // Low byte of distance
-        *len_mm  = hi*256 + lo; // Calculate the distance
+    typedef enum {
+        S_Flush,
+        S_Trig,
+        S_Receive,
+        S_Read
+    } Stage;
+    static uint8_t stage = S_Flush;
+    static unsigned long endMillis;
 
+    switch (stage) {
+    case S_Flush:   // clear receive buffer of serial port
+        Serial.flush();
+        ++stage;
+        break;
+    case S_Trig:    // Trig US-100 begin to measure the distance
+        Serial.write(0X55);
+        endMillis = millis() + TIMEOUT;
+        ++stage;
+        break;
+    case S_Receive: // Wait to receive 2 bytes
+        if (Serial.available() >= 2)
+           ++stage;
+        if (millis() >= endMillis)
+            stage = S_Flush;
+        break;
+    case S_Read:    // Read and calculate the result
+        *len_mm = Serial.read();    // read high byte of distance
+        *len_mm *= 256;
+        *len_mm += Serial.read();   // Add low byte of distance
+
+        stage = S_Flush;
         return true;
     }
 
@@ -74,13 +102,46 @@ bool US100_isValidDistance(uint16_t len_mm)
  */
 bool US100_stepSerialTemperature(int *deg)
 {
-    Serial.flush();                 // clear receive buffer of serial port
-    Serial.write(0X50);             // begin to measure the temperature
-    delay(500);                     // delay 500ms to wait result
+    enum {
+        TIMEOUT = 500   // milliseconds
+    };
+
+    typedef enum {
+        S_Flush,
+        S_Trig,
+        S_Receive,
+        S_Read
+    } Stage;
+    static uint8_t stage = S_Flush;
+    static unsigned long endMillis;
+
+    switch (stage) {
+    case S_Flush:   // clear receive buffer of serial port
+        Serial.flush();
+        ++stage;
+        break;
+    case S_Trig:    // Trig US-100 begin to measure the temperature
+        Serial.write(0X50);
+        endMillis = millis() + TIMEOUT;
+        ++stage;
+        break;
+    case S_Receive: // Wait to receive 1 byte
+        if (Serial.available() >= 1)
+           ++stage;
+        if (millis() >= endMillis)
+            stage = S_Flush;
+        break;
+    case S_Read:    // Read and calculate the result
+        *deg = Serial.read() - 45;
+
+        stage = S_Flush;
+        return true;
+    }
+
+    return false;
 
     if (Serial.available() >= 1) {  // when receive 1 bytes
         int deg45 = Serial.read(); // Get the received byte (temperature)
-        *deg = deg45 - 45;
 
         return true;
     }
