@@ -11,38 +11,15 @@
 
 void setup()
 {
-    enum {
-        BAUD_RATE = 9600,
-    };
 
     Seg7x4_init();
-    US100_init();
-
-    // Init serial
-    Serial.begin(BAUD_RATE);
-
-    Serial.print("Initialized Serial Port at ");
-    Serial.print(BAUD_RATE);
-    Serial.println(" baud rate.");
+    US100_initSerial();
 }
 
 
 void loop()
 {
     Seg7x4_step(8888);
-    US100_step();
-}
-
-//----------------------------------------------------------------------------
-// US-100 ultra-sonic distance sensor
-//----------------------------------------------------------------------------
-
-void US100_init(void)
-{
-}
-
-
-void US100_step(void)
-{
+    US100_stepSerial();
 }
 
