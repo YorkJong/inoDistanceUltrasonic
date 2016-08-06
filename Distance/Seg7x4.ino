@@ -7,6 +7,7 @@
  * @date 2016/08/06 (last revision)
  * @version 1.0
  */
+#include <assert.h>
 
 typedef enum {
     PIN_3 = 6,
@@ -56,7 +57,7 @@ static const uint8_t data[10][SEG_NUM] = {
 
 
 /** Initializes the LED relative pins as output mode. */
-void Seg7x4_initPin(void)
+static void Seg7x4_initPin(void)
 {
     for(int i = 0; i < POS_NUM; i++)
         pinMode(_posPins[i], OUTPUT);
@@ -85,7 +86,7 @@ void Seg7x4_init(void)
 }
 
 
-/** Step function of the 7-segment, 4-digit LED display.
+/** Steps the 7-segment, 4-digit LED display.
  * @param number a 4-digit number to show
  */
 void Seg7x4_step(uint16_t number)
