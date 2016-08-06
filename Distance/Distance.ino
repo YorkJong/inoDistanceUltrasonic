@@ -51,7 +51,7 @@ void loop_pulse(void)
 }
 
 
-void loop_searial(void)
+void loop_serial(void)
 {
     uint16_t len_mm;
 
