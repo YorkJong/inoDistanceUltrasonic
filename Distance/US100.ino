@@ -6,7 +6,7 @@
  *
  * @author Jiang Yu-Kuan <yukuan.jiang@gmail.com>
  * @date 2016/08/06 (initial version)
- * @date 2016/08/06 (last revision)
+ * @date 2016/08/09 (last revision)
  * @version 1.0
  */
 
@@ -162,15 +162,15 @@ bool US100_measurePulseDistance(uint16_t *len_mm)
     // A pulse width calculating US-100 returned
     echo_us = pulseIn(_echoPin, HIGH);
 
-    // Pulse effective range (1, 60000).
-    if ((echo_us < 60000) && (echo_us > 1)) {
+    // pluseIn works on pulses from 10us to 180*1000000us in length.
+    // Normal distance range: (1mm, 10000mm)
+    // -> Pulse effective range: (10us, 60000us).
+    if ((10 < echo_us) && (echo_us < 60000)) {
         // Millimeters = PulseWidth * 34 / 100 / 2
-        // len_mm = (echo_us * 0.34mm/us) / 2 (mm)
-        *len_mm = (echo_us*34/100) / 2;
+        *len_mm = echo_us * 34/100 / 2;
 
         return true;
     }
-
     return false;
 }
 
@@ -182,6 +182,7 @@ bool US100_measurePulseDistance(uint16_t *len_mm)
 /** Decides if a measureed distance is valid. */
 bool US100_isValidDistance(uint16_t len_mm)
 {
+    // normal distance should between 1mm and 10000mm (1mm, 10m)
     enum {
         LEN_MIN = 20,
         LEN_MAX = 4500
