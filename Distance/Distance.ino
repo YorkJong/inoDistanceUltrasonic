@@ -1,9 +1,10 @@
 /**
  * @file Distance.ino
- *
+ *  This program show an ultrasonic measured distance on the 4 digital 7
+ *  segment LED display.
  * @author Jiang Yu-Kuan <yukuan.jiang@gmail.com>
  * @date 2016/08/05 (initial version)
- * @date 2016/08/06 (last revision)
+ * @date 2016/08/10 (last revision)
  * @version 1.0
  */
 

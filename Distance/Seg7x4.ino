@@ -1,10 +1,10 @@
 /**
  * @file Seg7x4.ino
- * 7 segments, 4 digits LED display
+ * Driver-without-delay of the 4 digit 7 segment LED display.
  * @see http://yehnan.blogspot.tw/2013/08/arduino_26.html
  * @author Jiang Yu-Kuan <yukuan.jiang@gmail.com>
  * @date 2016/08/06 (initial version)
- * @date 2016/08/06 (last revision)
+ * @date 2016/08/10 (last revision)
  * @version 1.0
  */
 #include <assert.h>
@@ -56,7 +56,7 @@ static const uint8_t data[10][SEG_NUM] = {
 };
 
 
-/** Initializes the LED relative pins as output mode. */
+/** Initializes the display relative pins as output mode. */
 static void Seg7x4_initPin(void)
 {
     for(int i = 0; i < POS_NUM; i++)
@@ -67,7 +67,7 @@ static void Seg7x4_initPin(void)
 }
 
 
-/** Clears the LEDs. */
+/** Clears the display. */
 void Seg7x4_clear(void)
 {
     for(int i = 0; i < POS_NUM; i++)
@@ -78,7 +78,7 @@ void Seg7x4_clear(void)
 }
 
 
-/** Initializes the LEDs. */
+/** Initializes the display. */
 void Seg7x4_init(void)
 {
     Seg7x4_initPin();
@@ -86,7 +86,9 @@ void Seg7x4_init(void)
 }
 
 
-/** Steps the 7-segment, 4-digit LED display.
+/** Steps the 4 digit 7 segment display. This function show at most one digit
+ * at once and show 4 digits in turn. Each show is with a 5ms interval. The
+ * interval is controlled witout calling delay function.
  * @param number a 4-digit number to show
  */
 void Seg7x4_step(uint16_t number)
@@ -115,18 +117,18 @@ void Seg7x4_step(uint16_t number)
         endMillis = currMillis + INTERVAL;
 
         --pos;
-        Seg7x4_setDigit(pos, remainder / divisor);
+        Seg7x4_showDigit(pos, remainder / divisor);
         remainder %= divisor;
         divisor /= 10;
     }
 }
 
 
-/** Shows a digit at given position.
+/** Shows a digit at a given position.
  * @param pos the position (0..3)
  * @param digit the digit (0..9)
  */
-static void Seg7x4_setDigit(int pos, int digit)
+static void Seg7x4_showDigit(int pos, int digit)
 {
     assert ((0 <= pos) && (pos <= 3));
     assert ((0 <= digit) && (digit <=9));
