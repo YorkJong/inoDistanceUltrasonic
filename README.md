@@ -1,6 +1,6 @@
 # inoDistanceUltrasonic #
 
-This Arduino project is for measuring distance with an ultrasonic module. 
+This is an Arduino project for measuring distance with an ultrasonic module. 
 
 ### Parts ###
 
