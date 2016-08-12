@@ -9,3 +9,6 @@ This is an Arduino project for measuring distance with an ultrasonic module.
 * An 4 digit 7 segment LED display to show the distance in milli-meters
 * 8 220 Ohm resistors as current-limiting resistors of the LEDs
 * A mini breadboard (400 holes)
+* A 6V battery pack
+
+![DistanceUltrasonic.jpg](https://bitbucket.org/repo/7Bkezo/images/593100944-DistanceUltrasonic.jpg)![DistanceUltrasonic.jpg](https://bitbucket.org/repo/7Bkezo/images/3921913228-DistanceUltrasonic.jpg)
