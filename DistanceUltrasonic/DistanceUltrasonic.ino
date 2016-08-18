@@ -11,11 +11,18 @@
 
 #define USE_PULSE_MODE
 
+#ifdef USE_PULSE_MODE
+typedef enum {
+    PIN_Trig = 1,   ///< Trig/Tx pin
+    PIN_Echo = 0    ///< Echo/Rx pin
+} Pin;
+#endif
+
 void setup()
 {
     Seg7x4_init();
 #ifdef USE_PULSE_MODE
-    US100_initPulse(1, 0);  // init Trig/Tx, Echo/Rx pin
+    US100_initPulse(PIN_Trig, PIN_Echo);
 #else
     US100_initSerial();
 #endif
