@@ -4,84 +4,30 @@
  * @see http://yehnan.blogspot.tw/2013/08/arduino_26.html
  * @author Jiang Yu-Kuan <yukuan.jiang@gmail.com>
  * @date 2016/08/06 (initial version)
- * @date 2016/08/10 (last revision)
+ * @date 2016/08/19 (last revision)
  * @version 1.0
  */
 #include <assert.h>
 
-typedef enum {
-    PIN_3 = 6,
-    PIN_a = 9,
-    PIN_f = 8,
-    PIN_2 = 5,
-    PIN_1 = 4,
-    PIN_b = 7,
-
-    PIN_e = 11,
-    PIN_d = 12,
-    PIN_h = 13,
-    PIN_c = A0,
-    PIN_g = A1,
-    PIN_0 = A2,
-} Seg7X4Pin;
-
-
-#define POS_NUM 4
-#define SEG_NUM 8
-
-/** The position table. */
-static const uint8_t _posPins[POS_NUM] = {
-    PIN_0, PIN_1, PIN_2, PIN_3
-};
-
-/** The 8-segment table. */
-static const uint8_t _segPins[SEG_NUM] = {
-    PIN_a, PIN_b, PIN_c, PIN_d, PIN_e, PIN_f, PIN_g, PIN_h
-};
-
-
-/** The digit to display table. */
-static const uint8_t data[10][SEG_NUM] = {
-//   a, b, c, d, e, f, g, h
-    {1, 1, 1, 1, 1, 1, 0, 0},   // 0
-    {0, 1, 1, 0, 0, 0, 0, 0},   // 1
-    {1, 1, 0, 1, 1, 0, 1, 0},   // 2
-    {1, 1, 1, 1, 0, 0, 1, 0},   // 3
-    {0, 1, 1, 0, 0, 1, 1, 0},   // 4
-    {1, 0, 1, 1, 0, 1, 1, 0},   // 5
-    {1, 0, 1, 1, 1, 1, 1, 0},   // 6
-    {1, 1, 1, 0, 0, 0, 0, 0},   // 7
-    {1, 1, 1, 1, 1, 1, 1, 0},   // 8
-    {1, 1, 1, 1, 0, 1, 1, 0},   // 9
-};
-
-
-/** Initializes the display relative pins as output mode. */
-static void Digits_initPin(void)
-{
-    for(int i = 0; i < POS_NUM; i++)
-        pinMode(_posPins[i], OUTPUT);
-
-    for(int i = 0; i < SEG_NUM; i++)
-        pinMode(_segPins[i], OUTPUT);
-}
-
+//-----------------------------------------------------------------------------
+// 4 digit display
+//-----------------------------------------------------------------------------
 
 /** Clears the display. */
 void Digits_clear(void)
 {
-    for(int i = 0; i < POS_NUM; i++)
-        digitalWrite(_posPins[i], HIGH);
-
-    for(int i = 0; i < SEG_NUM; i++)
-        digitalWrite(_segPins[i], LOW);
+    SegLed_setPositions(0x00);
+    SegLed_setSegments(0x00);
 }
 
 
-/** Initializes the display. */
-void Digits_init(void)
+/** Initializes the display.
+ * @param posPins the list of position pins (0..3)
+ * @param segPins the list of segment pins (a..h)
+ */
+void Digits_init(const uint8_t posPins[], const uint8_t segPins[])
 {
-    Digits_initPin();
+    SegLed_init(posPins, segPins);
     Digits_clear();
 }
 
@@ -133,14 +79,91 @@ static void Digits_showDigit(int pos, int digit)
     assert ((0 <= pos) && (pos <= 3));
     assert ((0 <= digit) && (digit <=9));
 
-    for (int p = 0; p < POS_NUM; p++) {
-        if (p == pos)
-            digitalWrite(_posPins[p], LOW);
-        else
-            digitalWrite(_posPins[p], HIGH);
-    }
+    // Layout of LED segments of a digit:
+    //       a
+    //       -
+    //     f| |b
+    //       - g
+    //     e| |c
+    //       -
+    //       d  .h
+    static const uint8_t digit2seg[] = {
+        //            hgfe dcba
+        0x3F,   // 0: 0011 1111
+        0x06,   // 1: 0000 0110
+        0x5B,   // 2: 0101 1011
+        0x4F,   // 3: 0100 1111
+        0x66,   // 4: 0110 0110
+        0x6D,   // 5: 0110 1101
+        0x7D,   // 6: 0111 1101
+        0x07,   // 7: 0000 0111
+        0x7F,   // 8: 0111 1111
+        0x6F,   // 9: 0110 1111
+    };
 
-    for (int i = 0; i < SEG_NUM; i++)
-        digitalWrite(_segPins[i], data[digit][i] == 1 ? HIGH : LOW);
+    SegLed_setPositions(1 << pos);
+    SegLed_setSegments(digit2seg[digit]);
 }
+
+
+//-----------------------------------------------------------------------------
+// 4-digit segment LEDs: a display of common-cathode LEDs
+//-----------------------------------------------------------------------------
+
+enum {
+    SEG_NUM = 8,
+    POS_NUM = 4
+};
+
+static uint8_t _segPins[SEG_NUM];
+static uint8_t _posPins[POS_NUM];
+
+/** Initializes the 4-digit segment LEDs.
+ * @param posPins the list of position pins (0..3)
+ * @param segPins the list of segment pins (a..h)
+ */
+static void SegLed_init(const uint8_t posPins[], const uint8_t segPins[])
+{
+    for (int i=0; i<POS_NUM; ++i)
+        _posPins[i] = posPins[i];
+    for (int i=0; i<SEG_NUM; ++i)
+        _segPins[i] = segPins[i];
+
+    for(int i=0; i<POS_NUM; ++i)
+        pinMode(_posPins[i], OUTPUT);
+    for(int i=0; i<SEG_NUM; ++i)
+        pinMode(_segPins[i], OUTPUT);
+}
+
+
+/** Sets positions of common-cathode LEDs
+ * @param pos the bitmap of positions
+ */
+static void SegLed_setPositions(uint8_t bitmap)
+{
+    for (int i=0; i<POS_NUM; ++i) {
+        if (bitmap & 0x01)
+            digitalWrite(_posPins[i], LOW);     // common-cathode
+        else
+            digitalWrite(_posPins[i], HIGH);
+        bitmap >>= 1;
+    }
+}
+
+
+/** Sets segments of common-cathode LEDs
+ * @param bitmap the bitmap of the 8 segments.
+ */
+static void SegLed_setSegments(uint8_t bitmap)
+{
+    for (int i=0; i<SEG_NUM; ++i) {
+        if (bitmap & 0x01)
+            digitalWrite(_segPins[i], HIGH);
+        else
+            digitalWrite(_segPins[i], LOW);
+        bitmap >>= 1;
+    }
+}
+
+//-----------------------------------------------------------------------------
 

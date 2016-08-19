@@ -8,7 +8,6 @@
  * @date 2016/08/19 (last revision)
  * @version 1.0
  */
-
 #define USE_PULSE_MODE
 
 #ifdef USE_PULSE_MODE
@@ -20,7 +19,15 @@ typedef enum {
 
 void setup()
 {
-    Digits_init();
+    uint8_t posPins[] = {
+        A2, 4, 5, 6
+    };
+    uint8_t segPins[] = {
+    //  a  b  c   d   d   f  g   h
+        9, 7, A0, 12, 11, 8, A1, 13
+    };
+    Digits_init(posPins, segPins);
+
 #ifdef USE_PULSE_MODE
     US100_initPulse(PIN_Trig, PIN_Echo);
 #else
