@@ -1,8 +1,8 @@
 /**
  * @file US100.ino
  *  US-100 ultrasonic distance sensor
- * @see https://sites.google.com/site/myscratchbooks/home/projects/project-09-
- *      ultrasonic-sensor
+ * @see https://sites.google.com/site/myscratchbooks/home/projects/
+ *      project-09-ultrasonic-sensor
  *
  * @author Jiang Yu-Kuan <yukuan.jiang@gmail.com>
  * @date 2016/08/06 (initial version)
