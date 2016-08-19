@@ -1,14 +1,15 @@
 # inoDistanceUltrasonic #
 
-This is an Arduino project for measuring distance with an ultrasonic module. 
+This is an Arduino project for measuring distance with an ultrasonic module.
 
 ### Parts ###
 
-* An Arduino Pro mini (3.3V model or 5V model)
+* An Arduino Pro mini (5V model, 16MHz)
 * An US-100 ultrasonic distance sensor
 * An 4 digit 7 segment LED display to show the distance in milli-meters
-* 8 220 Ω resistors as current-limiting resistors of the LEDs
+* Eight 220 Ω resistors as current-limiting resistors of the LEDs
 * A mini breadboard (400 holes)
-* A 6V battery pack
+* Male to male solderless breadboard jumper cable wires
+* A 6V (1.5Vx4) battery pack
 
 ![DistanceUltrasonic.jpg](https://bitbucket.org/repo/7Bkezo/images/593100944-DistanceUltrasonic.jpg)
