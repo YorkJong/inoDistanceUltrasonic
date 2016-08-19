@@ -20,7 +20,7 @@ typedef enum {
 
 void setup()
 {
-    Seg7x4_init();
+    Digits_init();
 #ifdef USE_PULSE_MODE
     US100_initPulse(PIN_Trig, PIN_Echo);
 #else
@@ -48,7 +48,7 @@ void loop_pulse(void)
     if (!US100_measurePulseDistance(&len_mm) ||
         !US100_isValidDistance(len_mm)) {
         unsigned long endMillis = millis() + 1000;
-        Seg7x4_clear();
+        Digits_clear();
         while (millis() < endMillis)
             ;
         return;
@@ -56,7 +56,7 @@ void loop_pulse(void)
 
     unsigned long endMillis = millis() + 1000;
     while (millis() < endMillis)
-        Seg7x4_step(len_mm);
+        Digits_step(len_mm);
 }
 
 
@@ -65,9 +65,9 @@ void loop_serial(void)
     uint16_t len_mm;
 
     if (US100_stepSerialDistance(&len_mm) && !US100_isValidDistance(len_mm)) {
-        Seg7x4_clear();
+        Digits_clear();
         return;
     }
 
-    Seg7x4_step(len_mm);
+    Digits_step(len_mm);
 }
