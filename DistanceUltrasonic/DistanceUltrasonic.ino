@@ -20,10 +20,11 @@ typedef enum {
 void setup()
 {
     uint8_t posPins[] = {
+    //   0  1  2  3
         A2, 4, 5, 6
     };
     uint8_t segPins[] = {
-    //  a  b  c   d   d   f  g   h
+    //  a  b  c   d   e   f  g   h
         9, 7, A0, 12, 11, 8, A1, 13
     };
     Digits_init(posPins, segPins);
