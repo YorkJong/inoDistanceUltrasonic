@@ -35,7 +35,7 @@ void US100_initSerial(void)
 /** Steps distance measurement with Serial Data mode.
  * A measurement must call this function several times.
  * @param[out] len_mm the measured distance.
- * @retval true true in the case of success to get the distance;
+ * @retval true in the case of success to get the distance;
  * @retval fasle otherwise.
  * @note disconnect RX/Echo pin before upload the program.
  */
@@ -82,7 +82,7 @@ bool US100_stepSerialDistance(uint16_t *len_mm)
 /** Steps temperature measurement with Serial Data mode.
  * A measurement must call this function several times.
  * @param[out] deg the degree of the measured temperature.
- * @retval true true in the case of success to get the temperature;
+ * @retval true in the case of success to get the temperature;
  * @retval fasle otherwise.
  * @note disconnect RX/Echo pin before upload the program.
  */
@@ -145,9 +145,9 @@ void US100_initPulse(uint8_t trigPin, uint8_t echoPin)
 }
 
 
-/** Measure a distance with Pulse Width mode.
+/** Measures a distance with Pulse Width mode.
  * @param[out] len_mm the measured distance.
- * @retval true true in the case of success to get the distance;
+ * @retval true in the case of success to get the distance;
  * @retval fasle otherwise.
  */
 bool US100_measurePulseDistance(uint16_t *len_mm)
