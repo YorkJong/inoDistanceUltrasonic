@@ -4,7 +4,7 @@
  * @see http://yehnan.blogspot.tw/2013/08/arduino_26.html
  * @author Jiang Yu-Kuan <yukuan.jiang@gmail.com>
  * @date 2016/08/06 (initial version)
- * @date 2016/08/19 (last revision)
+ * @date 2016/08/25 (last revision)
  * @version 1.0
  */
 #include <assert.h>
@@ -85,8 +85,8 @@ static void Digits_showDigit(int pos, int digit)
     //     f| |b
     //       - g
     //     e| |c
-    //       -
-    //       d  .h
+    //       -   .dp(h)
+    //       d
     static const uint8_t digit2seg[] = {
         //            hgfe dcba
         0x3F,   // 0: 0011 1111
