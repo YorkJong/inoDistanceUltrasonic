@@ -6,7 +6,7 @@
  *
  * @author Jiang Yu-Kuan <yukuan.jiang@gmail.com>
  * @date 2016/08/06 (initial version)
- * @date 2016/08/13 (last revision)
+ * @date 2016/08/26 (last revision)
  * @version 1.0
  */
 
@@ -32,7 +32,7 @@ void US100_initSerial(void)
 }
 
 
-/** Steps distance measurement with Serial Data mode.
+/** Steps/Updates distance measurement with Serial Data mode.
  * A measurement must call this function several times.
  * @param[out] len_mm the measured distance.
  * @retval true in the case of success to get the distance;
@@ -79,7 +79,7 @@ bool US100_stepSerialDistance(uint16_t *len_mm)
 }
 
 
-/** Steps temperature measurement with Serial Data mode.
+/** Steps/Updates temperature measurement with Serial Data mode.
  * A measurement must call this function several times.
  * @param[out] deg the degree of the measured temperature.
  * @retval true in the case of success to get the temperature;

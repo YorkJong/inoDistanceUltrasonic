@@ -4,7 +4,7 @@
  * @see http://yehnan.blogspot.tw/2013/08/arduino_26.html
  * @author Jiang Yu-Kuan <yukuan.jiang@gmail.com>
  * @date 2016/08/06 (initial version)
- * @date 2016/08/25 (last revision)
+ * @date 2016/08/26 (last revision)
  * @version 1.0
  */
 #include <assert.h>
@@ -32,9 +32,9 @@ void Digits_init(const uint8_t posPins[], const uint8_t segPins[])
 }
 
 
-/** Steps the 4 digit 7 segment display. This function show at most one digit
- * at once and show 4 digits in turn. Each show is with a 5ms interval. The
- * interval is controlled witout calling delay function.
+/** Steps/Updates the 4-digit display with a number. This function show at
+ * most one digit at once and show 4 digits in turn. Each show is with a 5ms
+ * interval. The interval is controlled witout calling delay function.
  * @param number a 4-digit number to show
  */
 void Digits_step(uint16_t number)
