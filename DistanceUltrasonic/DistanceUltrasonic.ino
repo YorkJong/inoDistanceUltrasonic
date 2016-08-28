@@ -31,6 +31,7 @@ void setup()
 
 #ifdef USE_PULSE_MODE
     US100_initPulse(PIN_Trig, PIN_Echo);
+    Serial.begin(9600);
 #else
     US100_initSerial();
 #endif
@@ -39,8 +40,6 @@ void setup()
 
 void loop()
 {
-    uint16_t len_mm;
-
 #ifdef USE_PULSE_MODE
     loop_pulse();
 #else
@@ -51,19 +50,28 @@ void loop()
 
 void loop_pulse(void)
 {
-    uint16_t len_mm;
+    enum {
+        REPEAT_PERIOD = 2000 // in milliseconds
+    };
+    static unsigned long endMillis = 0;
+    static uint16_t len_mm;
 
-    if (!US100_measurePulseDistance(&len_mm) ||
-        !US100_isValidDistance(len_mm)) {
-        unsigned long endMillis = millis() + 1000;
-        Digits_clear();
-        while (millis() < endMillis)
-            ;
-        return;
+    if (millis() >= endMillis) {
+        endMillis = millis() + REPEAT_PERIOD;
+
+        if (!US100_measurePulseDistance(&len_mm) ||
+            !US100_isValidDistance(len_mm)) {
+            Serial.print(len_mm);
+            Serial.println(" -- Out of Range");
+            len_mm = 0; // lead to display clearing
+            Digits_clear();
+        }
+        else {
+            Serial.println(len_mm);
+        }
     }
 
-    unsigned long endMillis = millis() + 1000;
-    while (millis() < endMillis)
+    if (len_mm != 0)
         Digits_step(len_mm);
 }
 
