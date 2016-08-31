@@ -6,31 +6,40 @@
  *
  * @author Jiang Yu-Kuan <yukuan.jiang@gmail.com>
  * @date 2016/08/06 (initial version)
- * @date 2016/08/26 (last revision)
+ * @date 2016/08/31 (last revision)
  * @version 1.0
  */
+#include <SoftwareSerial.h>
+
+
+//-----------------------------------------------------------------------------
+// US-100 in both modes
+//-----------------------------------------------------------------------------
+
+static uint8_t _echoPin;
+static uint8_t _trigPin;
+static SoftwareSerial *_serial;
+
+
+/** Initializes the US-100 with Pulse Width mode.
+ * @param echoPin assign the Echo/RX pin.
+ * @param trigPin assign the Trig/TX pin.
+ */
+void US100_init(uint8_t echoPin, uint8_t trigPin)
+{
+    _echoPin = echoPin;
+    _trigPin = trigPin;
+
+    //pinMode(_echoPin, INPUT);    // set Echo pin input mode.
+    //pinMode(_trigPin, OUTPUT);   // set Trig pin output mode.
+    _serial = new SoftwareSerial(_echoPin, _trigPin);   // RX, TX
+    _serial->begin(9600);
+}
+
 
 //-----------------------------------------------------------------------------
 // US-100 in Serial Data mode (module has jumper cap on the back)
 //-----------------------------------------------------------------------------
-
-/** Initializes US-100 module with Serial Data mode.
- * @note disconnect RX/Echo pin before upload the program.
- */
-void US100_initSerial(void)
-{
-    enum {
-        BAUD_RATE = 9600,
-    };
-
-    // Init serial
-    Serial.begin(BAUD_RATE);
-
-    Serial.print("Initialized Serial Port at ");
-    Serial.print(BAUD_RATE);
-    Serial.println(" baud rate.");
-}
-
 
 /** Steps/Updates distance measurement with Serial Data mode.
  * A measurement must call this function several times.
@@ -49,17 +58,18 @@ bool US100_stepSerialDistance(uint16_t *len_mm)
 
     switch (stage) {
     case 0:     // clear receive buffer of serial port
-        Serial.flush();
+        //US100_initSerialIfNot();
+        _serial->flush();
         ++stage;
         break;
     case 1:     // Trig US-100 begin to measure the distance
-        Serial.write(0X55);
+        _serial->write(0X55);
         endMillis = millis() + TIMEOUT;
         ++stage;
         break;
 
     case 2:     // Wait to receive 2 bytes
-        if (Serial.available() >= 2)
+        if (_serial->available() >= 2)
            ++stage;
 
         if (millis() >= endMillis)
@@ -67,9 +77,9 @@ bool US100_stepSerialDistance(uint16_t *len_mm)
         break;
     case 3:     // Read and calculate the result
         // Millimeters = FirstByteRead * 256 + SecondByteRead
-        *len_mm = Serial.read();    // Read high byte of distance
+        *len_mm = _serial->read();    // Read high byte of distance
         *len_mm *= 256;
-        *len_mm += Serial.read();   // Read and add low byte of distance
+        *len_mm += _serial->read();   // Read and add low byte of distance
 
         stage = 0;
         return true;
@@ -96,17 +106,18 @@ bool US100_stepSerialTemperature(int *deg)
 
     switch (stage) {
     case 0:     // clear receive buffer of serial port
-        Serial.flush();
+        //US100_initSerialIfNot();
+        _serial->flush();
         ++stage;
         break;
     case 1:     // Trig US-100 begin to measure the temperature
-        Serial.write(0X50);
+        _serial->write(0X50);
         endMillis = millis() + TIMEOUT;
         ++stage;
         break;
 
     case 2:     // Wait to receive 1 byte
-        if (Serial.available() >= 1)
+        if (_serial->available() >= 1)
            ++stage;
 
         if (millis() >= endMillis)
@@ -114,7 +125,7 @@ bool US100_stepSerialTemperature(int *deg)
         break;
     case 3:     // Read and calculate the result
         // Celsius = ByteRead - 45
-        *deg = Serial.read() - 45;
+        *deg = _serial->read() - 45;
 
         stage = 0;
         return true;
@@ -127,23 +138,6 @@ bool US100_stepSerialTemperature(int *deg)
 //-----------------------------------------------------------------------------
 // US-100 in Pulse Width mode (removing the jumper cap on the back)
 //-----------------------------------------------------------------------------
-
-static uint8_t _trigPin;
-static uint8_t _echoPin;
-
-/** Initializes the US-100 with Pulse Width mode.
- * @param trigPin assign the Trig pin.
- * @param echoPin assign the Echo pin.
- */
-void US100_initPulse(uint8_t trigPin, uint8_t echoPin)
-{
-    _trigPin = trigPin;
-    _echoPin = echoPin;
-
-    pinMode(_trigPin, OUTPUT);   // set Trig pin output mode.
-    pinMode(_echoPin, INPUT);    // set Echo pin input mode.
-}
-
 
 /** Measures a distance with Pulse Width mode.
  * @param[out] len_mm the measured distance.

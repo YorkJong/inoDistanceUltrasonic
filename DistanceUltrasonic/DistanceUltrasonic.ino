@@ -10,12 +10,12 @@
  */
 //#define USE_PULSE_MODE
 
-#ifdef USE_PULSE_MODE
+
 typedef enum {
-    PIN_Trig = 1,   ///< Trig/Tx pin
-    PIN_Echo = 0    ///< Echo/Rx pin
+    PIN_Echo = 2,   ///< Echo/Rx pin
+    PIN_Trig = 3,   ///< Trig/Tx pin
 } Pin;
-#endif
+
 
 void setup()
 {
@@ -29,12 +29,9 @@ void setup()
     };
     Digits_init(posPins, segPins);
 
-#ifdef USE_PULSE_MODE
-    US100_initPulse(PIN_Trig, PIN_Echo);
-    Serial.begin(9600);
-#else
-    US100_initSerial();
-#endif
+    US100_init(PIN_Echo, PIN_Trig); // TX, RX
+
+    initSerial();
 }
 
 
@@ -87,3 +84,19 @@ void loop_serial(void)
 
     Digits_step(len_mm);
 }
+
+
+void initSerial(void)
+{
+    enum {
+        BAUD_RATE = 9600,
+    };
+
+    // Init serial
+    Serial.begin(BAUD_RATE);
+
+    Serial.print("Initialized Serial Port at ");
+    Serial.print(BAUD_RATE);
+    Serial.println(" baud rate.");
+}
+
