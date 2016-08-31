@@ -5,10 +5,10 @@
  *
  * @author Jiang Yu-Kuan <yukuan.jiang@gmail.com>
  * @date 2016/08/05 (initial version)
- * @date 2016/08/19 (last revision)
+ * @date 2016/08/31 (last revision)
  * @version 1.0
  */
-#define USE_PULSE_MODE
+//#define USE_PULSE_MODE
 
 #ifdef USE_PULSE_MODE
 typedef enum {
@@ -78,7 +78,7 @@ void loop_pulse(void)
 
 void loop_serial(void)
 {
-    uint16_t len_mm;
+    static uint16_t len_mm;
 
     if (US100_stepSerialDistance(&len_mm) && !US100_isValidDistance(len_mm)) {
         Digits_clear();
